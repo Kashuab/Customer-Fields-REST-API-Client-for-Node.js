@@ -1,6 +1,39 @@
 import { Customer } from './Customer';
 import { RequestDispatcher, RequestDispatcherInit } from './RequestDispatcher';
 
+export class CustomerFieldsAPIClient extends RequestDispatcher {
+  constructor(opts?: CustomerFieldsAPIClientOpts) {
+    super(opts);
+  }
+
+  public async searchCustomers(query: GetCustomersQuery, opts?: GetCustomersOpts): Promise<Customer[]> {
+    const page = opts?.page || 1,
+      limit = opts?.limit || 25,
+      sortBy = opts?.sortBy || 'updated_at',
+      sortOrder = opts?.sortOrder || 'desc';
+
+    let path = `/customers/search.json?page=${page}&limit=${limit}&sort_by=${sortBy}&sort_order=${sortOrder}`;
+
+    if (opts?.formId) path += `&form_id=${opts.formId};`;
+
+    Object.keys(query).forEach((key) => {
+      const value = query[key as keyof GetCustomersQuery];
+
+      path += `&${key}=${value}`;
+    });
+
+    const response = await this.dispatchRequest(path);
+    const customers = (await response.json()).customers || [];
+
+    return customers.map((customer: Record<string, any>) => {
+      return new Customer(customer, {
+        privateAccessToken: this.privateAccessToken,
+        apiUrl: this.apiUrl,
+      });
+    });
+  }
+}
+
 export type CustomerFieldsAPIClientOpts = RequestDispatcherInit & {};
 
 export type GetCustomersQuery = {
@@ -55,38 +88,3 @@ export type GetCustomersOpts = {
    */
   formId?: string;
 };
-
-export class CustomerFieldsAPIClient extends RequestDispatcher {
-  constructor(opts?: CustomerFieldsAPIClientOpts) {
-    super(opts);
-  }
-
-  public async getCustomers(query: GetCustomersQuery, opts?: GetCustomersOpts): Promise<Customer[]> {
-    const page = opts?.page || 1,
-      limit = opts?.limit || 25,
-      sortBy = opts?.sortBy || 'updated_at',
-      sortOrder = opts?.sortOrder || 'desc';
-
-    let path = `/customers/search.json?page=${page}&limit=${limit}&sort_by=${sortBy}&sort_order=${sortOrder}`;
-
-    if (opts?.formId) path += `&form_id=${opts.formId};`;
-
-    Object.keys(query).forEach((key) => {
-      const value = query[key as keyof GetCustomersQuery];
-
-      path += `&${key}=${value}`;
-    });
-
-    const response = await this.dispatchRequest(path);
-    const customers = (await response.json()).customers || [];
-
-    return customers.map((customer: Record<string, any>) => {
-      return new Customer({
-        privateAccessToken: this.privateAccessToken,
-        apiUrl: this.apiUrl,
-        myshopifyDomain: this.myshopifyDomain,
-        data: customer,
-      });
-    });
-  }
-}

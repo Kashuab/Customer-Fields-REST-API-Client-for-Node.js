@@ -16,19 +16,26 @@ export class Customer extends RequestDispatcher {
     return this.get('state') == 'cf:pending';
   }
 
-  set(data: keyof BasicCustomerDataDict | string | Record<string, any>, value?: any): Customer {
-    if (typeof data == 'string') {
-      this.data = set(this.data, data, value);
-    } else if (data instanceof Object) {
+  set(data: BasicCustomerDataDict): Customer;
+  set<K extends BasicCustomerDataDictKey = BasicCustomerDataDictKey>(
+    key: K | string,
+    value: BasicCustomerDataDict[K],
+  ): Customer;
+  set(dataOrKey: BasicCustomerDataDict | string, value?: any): Customer {
+    if (typeof dataOrKey == 'string') {
+      this.data = set(this.data, dataOrKey, value);
+    } else {
       this.data = {
         ...this.data,
-        ...data,
+        ...dataOrKey,
       };
     }
 
     return this;
   }
 
+  get<K extends BasicCustomerDataDictKey = BasicCustomerDataDictKey>(key: K): BasicCustomerDataDict[K];
+  get(key: string): any;
   get(key: string): any {
     return get(this.data, key);
   }
@@ -51,9 +58,9 @@ export class Customer extends RequestDispatcher {
       body: JSON.stringify(payload),
     });
 
-    const data = (await response.json()).customer;
+    const jsonResponse = await response.json();
 
-    this.set(data);
+    this.set(jsonResponse.customer);
 
     return this;
   }
@@ -77,6 +84,8 @@ export type CustomerAddressDict = {
   country_name: string;
   default: boolean;
 };
+
+export type BasicCustomerDataDictKey = keyof BasicCustomerDataDict;
 
 export type BasicCustomerDataDict = {
   accepts_marketing: boolean;
