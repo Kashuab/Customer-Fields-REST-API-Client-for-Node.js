@@ -10,7 +10,7 @@
     "node": ">=0.14"
   },
   "scripts": {
-    "example": "ts-node-dev example/index.ts",
+    "example": "ts-node-dev examples/index.ts",
     "test": "jest",
     "build": "tsc --project tsconfig.json -d --outDir lib",
     "prepublishOnly": "yarn build"

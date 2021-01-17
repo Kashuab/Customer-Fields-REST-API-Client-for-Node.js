@@ -1,8 +1,24 @@
-import { Customer } from './Customer';
+import { BasicCustomerDataDict, Customer } from './Customer';
 import { dispatchRequest } from './dispatchRequest';
 
+/* eslint-disable */
+export type PaginatedResponse<T> = Promise<
+  [
+    T,
+    {
+      page: number;
+      next?: () => PaginatedResponse<T>;
+      prev?: () => PaginatedResponse<T>;
+    }
+  ]
+>;
+/* eslint-disable */
+
 export class CustomerFieldsAPIClient {
-  public static async searchCustomers(query: GetCustomersQuery, opts?: GetCustomersOpts): Promise<Customer[]> {
+  public static async searchCustomers(
+    query: GetCustomersQuery,
+    opts?: GetCustomersOpts,
+  ): PaginatedResponse<Customer[]> {
     const page = opts?.page || 1,
       limit = opts?.limit || 25,
       sortBy = opts?.sortBy || 'updated_at',
@@ -19,11 +35,33 @@ export class CustomerFieldsAPIClient {
     });
 
     const response = await dispatchRequest(path);
-    const customers = (await response.json()).customers || [];
 
-    return customers.map((customer: Record<string, any>) => {
+    if (!response.ok) {
+      console.log(response.status);
+      console.log(response.statusText);
+      throw new Error('Failed to dispatch customers search request');
+    }
+
+    const customers: BasicCustomerDataDict[] = (await response.json()).customers || [];
+
+    const customerInstances = customers.map((customer: Record<string, any>) => {
       return new Customer(customer);
     });
+
+    const canGoToNextPage = customers.length == limit,
+      canGoToPreviousPage = page > 1;
+
+    const next = () => CustomerFieldsAPIClient.searchCustomers(query, { ...opts, page: page + 1 });
+    const prev = () => CustomerFieldsAPIClient.searchCustomers(query, { ...opts, page: page - 1 });
+
+    return [
+      customerInstances,
+      {
+        page,
+        next: canGoToNextPage ? next: undefined,
+        prev: canGoToPreviousPage ? prev : undefined,
+      },
+    ];
   }
 }
 

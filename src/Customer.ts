@@ -1,11 +1,13 @@
 import { dispatchRequest } from './dispatchRequest';
 import { get, set } from 'lodash';
 
+export type CustomerDataDict = BasicCustomerDataDict & Record<string, any>;
+
 export class Customer {
   id?: string;
-  data: Partial<BasicCustomerDataDict> & Record<string, any>;
+  data: CustomerDataDict;
 
-  constructor(data?: Record<string, any>) {
+  constructor(data?: CustomerDataDict) {
     this.data = data || {};
     this.id = this.data.id;
   }
@@ -19,7 +21,7 @@ export class Customer {
     key: K | string,
     value: BasicCustomerDataDict[K],
   ): Customer;
-  set(dataOrKey: BasicCustomerDataDict | string, value?: any): Customer {
+  set(dataOrKey: BasicCustomerDataDict | string, value?: unknown): Customer {
     if (typeof dataOrKey == 'string') {
       this.data = set(this.data, dataOrKey, value);
     } else {
@@ -65,52 +67,52 @@ export class Customer {
 }
 
 export type CustomerAddressDict = {
-  id: string;
-  first_name: string;
-  last_name: string;
-  company: string;
-  address1: string;
-  address2: string;
-  city: string;
-  province: string;
-  country: string;
-  zip: string;
-  phone: string;
-  name: string;
-  province_code: string;
-  country_code: string;
-  country_name: string;
-  default: boolean;
+  id?: string;
+  first_name?: string;
+  last_name?: string;
+  company?: string;
+  address1?: string;
+  address2?: string;
+  city?: string;
+  province?: string;
+  country?: string;
+  zip?: string;
+  phone?: string;
+  name?: string;
+  province_code?: string;
+  country_code?: string;
+  country_name?: string;
+  default?: boolean;
 };
 
 export type BasicCustomerDataDictKey = keyof BasicCustomerDataDict;
 
 export type BasicCustomerDataDict = {
-  accepts_marketing: boolean;
+  accepts_marketing?: boolean;
 
   /**
    * ISO-formatted, i.e. `"2020-07-13T12:44:14-05:00"`
    */
   accepts_marketing_updated_at?: string;
 
-  admin_graphql_api_id: string;
-  addresses: CustomerAddressDict[];
+  admin_graphql_api_id?: string;
+  addresses?: CustomerAddressDict[];
   default_address?: CustomerAddressDict;
-  email: string;
-  first_name: string;
-  last_name: string;
+  email?: string;
+  first_name?: string;
+  last_name?: string;
   multipass_identifier?: string;
-  note: string;
+  note?: string;
 
   /**
    * E.164 format, i.e. `"+13605402030"`
    */
-  phone: string;
+  phone?: string;
 
-  tags: string[];
-  tax_exempt: boolean;
-  tax_exemptions: string[];
-  readonly average_order_amount: number;
+  tags?: string[];
+  tax_exempt?: boolean;
+  tax_exemptions?: string[];
+  readonly average_order_amount?: number;
 
   /**
    * Currency in ISO 4217 format, i.e. `"USD"`, `"EUR"`, `"GBP"`, `"JPY"`.
@@ -122,21 +124,21 @@ export type BasicCustomerDataDict = {
   /**
    * ISO-formatted, i.e. `"2020-07-13T12:39:39-05:00"`
    */
-  readonly created_at: string;
+  readonly created_at?: string;
 
-  readonly id: string;
+  readonly id?: string;
   readonly last_order_id?: number;
   readonly last_order_name?: string;
   readonly marketing_opt_in_level?: string;
-  readonly orders_count: number;
+  readonly orders_count?: number;
   readonly shopify_id?: number;
-  readonly state: 'enabled' | 'invited' | 'declined' | 'disabled' | 'cf:pending';
-  readonly total_spent: number;
+  readonly state?: 'enabled' | 'invited' | 'declined' | 'disabled' | 'cf:pending';
+  readonly total_spent?: number;
 
   /**
    * ISO-formatted, i.e. `"2020-07-13T12:44:14-05:00"`
    */
-  readonly updated_at: string;
+  readonly updated_at?: string;
 
   readonly verified_email?: boolean;
 };
@@ -148,11 +150,4 @@ export type CustomerSaveOpts = {
 export type CustomerSaveRequestPayload = {
   customer: Record<string, any>;
   form_id?: string;
-};
-
-export type CustomerUpdateOpts = CustomerSaveOpts & {};
-export type CustomerUpdateRequestPayload = CustomerSaveRequestPayload & {};
-
-export type CustomerInitOpts = RequestDispatcherInit & {
-  data: BasicCustomerDataDict & Record<string, any>;
 };

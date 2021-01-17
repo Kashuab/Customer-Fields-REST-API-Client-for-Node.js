@@ -15,7 +15,7 @@ export type CFApiClientConfig = {
 };
 
 export const config: CFApiClientConfig = {
-  apiUrl: process.env.CF_API_URL || 'https://app.customerfields.com/',
+  apiUrl: process.env.CF_API_URL || 'https://app.customerfields.com',
   apiPrefix: process.env.CF_API_PREFIX || '/api/v2',
   privateAccessToken: process.env.CF_PRIVATE_ACCESS_TOKEN,
 };
