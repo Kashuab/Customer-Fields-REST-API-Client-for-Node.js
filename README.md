@@ -107,7 +107,7 @@ customer.set('default_address', {
 });
 ```
 
-### Developing the client
+## Contributing
 
 Pull requests are always welcome! Start by cloning the repository:
 
@@ -129,5 +129,10 @@ You can then import it from another local project:
 
 ```
 // ~/some-project/index.ts
-import { CF } from '../customer-fields-api-client-node';
+import CF from '../customer-fields-api-client-node';
+
+const customer = new CF.Customer({
+  first_name: 'John',
+  // ...
+});
 ```
