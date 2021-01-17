@@ -38,8 +38,7 @@ Here's some example usage:
 ```typescript
 import CF from 'customer-fields-api-client-node';
 
-// Bonus points: put these in a .env file instead, and use the dotenv module to load it!
-process.env.CF_MYSHOPIFY_DOMAIN = 'your-shop.myshopify.com';
+// Bonus points: put this environment variable in a .env file instead, and use the dotenv module to load it!
 process.env.CF_PRIVATE_ACCESS_TOKEN = '<your token>';
 
 const customers = await CF.Customer.find({});
