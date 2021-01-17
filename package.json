@@ -1,0 +1,20 @@
+{
+  "name": "customer-fields-api-client",
+  "version": "0.1.0",
+  "description": "A client for using the Customer Fields REST API.",
+  "main": "lib/index.js",
+  "author": "Kyle Kashuba <kyle@heliumdev.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "ts-node-dev index.ts",
+    "build": "tsc --outDir lib",
+    "prepublish": "yarn build"
+  },
+  "dependencies": {
+    "node-fetch": "^2.6.1"
+  },
+  "devDependencies": {
+    "@types/node": "^14.14.21",
+    "ts-node-dev": "^1.1.1"
+  }
+}
