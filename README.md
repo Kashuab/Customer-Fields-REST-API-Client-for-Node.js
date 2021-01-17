@@ -60,6 +60,53 @@ See more examples [in our `/examples` directory.](examples)
 
 An error will be thrown if `document` is in the `window`. Again, *do not use this library in the browser.*
 
+## Error handling
+
+Many different errors can be thrown as a result of attempts to save bad data. Here's how you can catch them:
+
+```typescript
+import { Customer } from 'customer-fields-api-client-node';
+
+const customer = new Customer({
+  email: 'some_email_in_use@website.com'
+});
+
+try {
+  await customer.save();
+} catch (err) {
+  if (err instanceof Customer.Errors.EmailAlreadyTakenError) {
+    console.log('Uh oh!')
+  }
+}
+```
+
+You can explore the `Customer.Errors` object to see what errors you need to handle.
+
+## TypeScript goodness
+
+We've got some awesome typings to make your life easier. Simple problems can get caught before compiling if you're using TypeScript.
+
+For example:
+
+```typescript
+const customer = new Customer();
+
+// 1234 is not assignable to type 'string'
+customer.set('email', 1234);
+
+const state = customer.get('state');
+
+// 'bad value' is not assignable to type 'disabled' | 'enabled' | 'invited' | 'declined' | 'cf:pending'
+if (state == 'bad value') {
+  // ...
+}
+
+customer.set('default_address', {
+  // 'bad_key' does not exist in type 'CustomerAddressDict'
+  bad_key: 'Example value',
+});
+```
+
 ### Developing the client
 
 Pull requests are always welcome! Start by cloning the repository:
