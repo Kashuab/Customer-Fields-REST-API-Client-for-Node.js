@@ -23,6 +23,8 @@ Check out our [developer documentation](https://developers.customerfields.com/) 
 
 ## Getting started
 
+(This package is currently not available on NPM, the following instructions are placeholders until we have a stable MVP)
+
 Start by installing the module into your project:
 
 `npm install --save customer-fields-api-client`

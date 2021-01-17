@@ -1,7 +1,12 @@
 import { dispatchRequest } from './dispatchRequest';
 import { get, set } from 'lodash';
 import { RequestInit, Response } from 'node-fetch';
-import { CustomerErrors, getCustomerError, EmailAlreadyTakenError } from './errors/CustomerErrors';
+import {
+  CustomerErrors,
+  getCustomerError,
+  EmailAlreadyTakenError,
+  EmailContainsInvalidDomainError,
+} from './errors/CustomerErrors';
 
 export type CustomerDataDict = BasicCustomerDataDict & Record<string, any>;
 
@@ -12,85 +17,11 @@ export class Customer {
 
   static Errors = {
     EmailAlreadyTakenError,
+    EmailContainsInvalidDomainError,
   };
 
-  static async dispatchRequest(path: string, fetchInit?: RequestInit | undefined): Promise<Response> {
-    const response = await dispatchRequest(path, fetchInit);
-
-    if (!response.ok) {
-      let errors: CustomerErrors;
-
-      try {
-        errors = (await response.json()).errors;
-      } catch (err) {
-        console.error(err);
-        throw new Error(`Failed to dispatch request, received status code ${response.status}: ${response.statusText}`);
-      }
-
-      const ErrorClass = getCustomerError(errors);
-
-      if (ErrorClass) {
-        throw new ErrorClass();
-      }
-    }
-
-    return response;
-  }
-
-  static async findById(id: string): Promise<Customer | null> {
-    const response = await Customer.dispatchRequest(`/customers/${id}.json`);
-    if (!response.ok) {
-      throw new Error(`Failed to find customer by ID, receieved error code ${response.status}: ${response.statusText}`);
-    }
-
-    const customer = (await response.json()).customer;
-
-    return customer ? new Customer(customer) : null;
-  }
-
-  static async find(query: GetCustomersQuery, opts?: GetCustomersOpts): PaginatedResponse<Customer[]> {
-    const page = opts?.page || 1,
-      limit = opts?.limit || 25,
-      sortBy = opts?.sortBy || 'updated_at',
-      sortOrder = opts?.sortOrder || 'desc';
-
-    let path = `/customers/search.json?page=${page}&limit=${limit}&sort_by=${sortBy}&sort_order=${sortOrder}`;
-
-    if (opts?.formId) path += `&form_id=${opts.formId};`;
-
-    Object.keys(query).forEach((key) => {
-      const value = query[key as keyof GetCustomersQuery];
-
-      path += `&${key}=${value}`;
-    });
-
-    const response = await Customer.dispatchRequest(path);
-
-    if (!response.ok) {
-      throw new Error(`Failed to find customers, receieved error code ${response.status}: ${response.statusText}`);
-    }
-
-    const customers: BasicCustomerDataDict[] = (await response.json()).customers || [];
-
-    const customerInstances = customers.map((customer: Record<string, any>) => {
-      return new Customer(customer);
-    });
-
-    const canGoToNextPage = customers.length == limit,
-      canGoToPreviousPage = page > 1;
-
-    const next = () => Customer.find(query, { ...opts, page: page + 1 });
-    const prev = () => Customer.find(query, { ...opts, page: page - 1 });
-
-    return [
-      customerInstances,
-      {
-        page,
-        next: canGoToNextPage ? next : undefined,
-        prev: canGoToPreviousPage ? prev : undefined,
-      },
-    ];
-  }
+  static find = findCustomers;
+  static findById = findCustomerById;
 
   constructor(data?: CustomerDataDict) {
     this.data = data || {};
@@ -139,7 +70,7 @@ export class Customer {
       endpoint += `/${this.id}`;
     }
 
-    const response = await Customer.dispatchRequest(endpoint, {
+    const response = await dispatchCustomerRequest(endpoint, {
       method: this.id ? 'PUT' : 'POST',
       body: JSON.stringify(payload),
     });
@@ -167,7 +98,10 @@ export class Customer {
       throw new Error('Customer must have a shopify ID before sending an invite');
     }
 
-    const response = await Customer.dispatchRequest(`/customers/${this.id}/invite`, { method: 'POST' });
+    const response = await dispatchCustomerRequest(`/customers/${this.id}/invite`, { method: 'POST' });
+
+    this.set('state', 'invited');
+
     if (!response.ok) {
       throw new Error(
         `Failed to send invite to customer, receieved error code ${response.status}: ${response.statusText}`,
@@ -329,3 +263,81 @@ export type GetCustomersOpts = {
    */
   formId?: string;
 };
+
+async function dispatchCustomerRequest(path: string, fetchInit?: RequestInit | undefined): Promise<Response> {
+  const response = await dispatchRequest(path, fetchInit);
+
+  if (!response.ok) {
+    let errors: CustomerErrors;
+
+    try {
+      errors = (await response.json()).errors;
+    } catch (err) {
+      console.error(err);
+      throw new Error(`Failed to dispatch request, received status code ${response.status}: ${response.statusText}`);
+    }
+
+    const ErrorClass = getCustomerError(errors);
+
+    if (ErrorClass) {
+      throw new ErrorClass();
+    }
+  }
+
+  return response;
+}
+
+async function findCustomerById(id: string): Promise<Customer | null> {
+  const response = await dispatchCustomerRequest(`/customers/${id}.json`);
+  if (!response.ok) {
+    throw new Error(`Failed to find customer by ID, receieved error code ${response.status}: ${response.statusText}`);
+  }
+
+  const customer = (await response.json()).customer;
+
+  return customer ? new Customer(customer) : null;
+}
+
+async function findCustomers(query: GetCustomersQuery, opts?: GetCustomersOpts): PaginatedResponse<Customer[]> {
+  const page = opts?.page || 1,
+    limit = opts?.limit || 25,
+    sortBy = opts?.sortBy || 'updated_at',
+    sortOrder = opts?.sortOrder || 'desc';
+
+  let path = `/customers/search.json?page=${page}&limit=${limit}&sort_by=${sortBy}&sort_order=${sortOrder}`;
+
+  if (opts?.formId) path += `&form_id=${opts.formId};`;
+
+  Object.keys(query).forEach((key) => {
+    const value = query[key as keyof GetCustomersQuery];
+
+    path += `&${key}=${value}`;
+  });
+
+  const response = await dispatchCustomerRequest(path);
+
+  if (!response.ok) {
+    throw new Error(`Failed to find customers, receieved error code ${response.status}: ${response.statusText}`);
+  }
+
+  const customers: BasicCustomerDataDict[] = (await response.json()).customers || [];
+
+  const customerInstances = customers.map((customer: Record<string, any>) => {
+    return new Customer(customer);
+  });
+
+  const canGoToNextPage = customers.length == limit,
+    canGoToPreviousPage = page > 1;
+
+  const next = () => findCustomers(query, { ...opts, page: page + 1 });
+  const prev = () => findCustomers(query, { ...opts, page: page - 1 });
+
+  return [
+    customerInstances,
+    {
+      page,
+      next: canGoToNextPage ? next : undefined,
+      prev: canGoToPreviousPage ? prev : undefined,
+    },
+  ];
+}

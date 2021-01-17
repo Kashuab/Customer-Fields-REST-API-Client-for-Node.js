@@ -2,7 +2,7 @@ import { Customer } from '../src';
 
 export async function createCustomer(): Promise<Customer | undefined> {
   const newCustomer = new Customer({
-    email: 'kyle+totallynewcustomer@heliumdev.com',
+    email: 'email@website.com',
     first_name: 'First name',
     last_name: 'Last name',
   });

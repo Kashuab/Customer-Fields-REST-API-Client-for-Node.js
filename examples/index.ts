@@ -6,6 +6,7 @@ import { listCustomers } from './listCustomers';
 import { updateCustomer } from './updateCustomer';
 import { createCustomer } from './createCustomer';
 import { listPagedCustomers } from './listPagedCustomers';
+import { createAndInviteCustomer } from './createAndInviteCustomer';
 
 /*
   Or uncomment this and configure them directly:
@@ -19,5 +20,6 @@ import { listPagedCustomers } from './listPagedCustomers';
   // Assuming you have a customer in your shop...
   await updateCustomer(customers[0]);
   await createCustomer();
+  await createAndInviteCustomer();
   await listPagedCustomers();
 })();
