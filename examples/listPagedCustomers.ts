@@ -1,4 +1,4 @@
-import CF, { Customer } from '../src';
+import { Customer } from '../src';
 
 /**
  * PaginatedResponse usage demo
@@ -8,7 +8,7 @@ import CF, { Customer } from '../src';
 export async function listPagedCustomers(): Promise<Customer[]> {
   let allCustomers: Customer[] = [];
 
-  let search = () => CF.searchCustomers({}, { limit: 250 });
+  let search = () => Customer.find({}, { limit: 250 });
 
   while (true) {
     const [customers, pagination] = await search();
@@ -20,6 +20,7 @@ export async function listPagedCustomers(): Promise<Customer[]> {
     if (pagination.next) {
       search = pagination.next;
     } else {
+      // No next page available, break out of the loop
       break;
     }
   }
