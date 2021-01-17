@@ -1,10 +1,14 @@
 import CF, { Customer } from '../src';
-import { PaginatedResponse } from '../src/CustomerFieldsAPIClient';
 
+/**
+ * PaginatedResponse usage demo
+ *
+ * This could take a while if your shop has a lot of customers!
+ */
 export async function listPagedCustomers(): Promise<Customer[]> {
   let allCustomers: Customer[] = [];
 
-  let search: () => PaginatedResponse<Customer[]> = () => CF.searchCustomers({}, { limit: 250 });
+  let search = () => CF.searchCustomers({}, { limit: 250 });
 
   while (true) {
     const [customers, pagination] = await search();
@@ -16,7 +20,11 @@ export async function listPagedCustomers(): Promise<Customer[]> {
     if (pagination.next) {
       search = pagination.next;
     } else {
-      return allCustomers;
+      break;
     }
   }
+
+  console.log(`You have ${allCustomers.length} customers!`);
+
+  return allCustomers;
 }
