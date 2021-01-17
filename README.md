@@ -56,7 +56,7 @@ customer.set('birthday', new Date().toISOString());
 await customer.save();
 ```
 
-See more examples [in our `/examples` directory.](examples/index.ts)
+See more examples [in our `/examples` directory.](examples)
 
 An error will be thrown if `document` is in the `window`. Again, *do not use this library in the browser.*
 
