@@ -1,4 +1,4 @@
-import fetch, { RequestInit, Response } from "node-fetch";
+import fetch, { RequestInit, Response } from 'node-fetch';
 
 export type RequestDispatcherInit = {
   /**
@@ -8,18 +8,18 @@ export type RequestDispatcherInit = {
 
   /**
    * Example: `"your-shop.myshopify.com"`
-   * 
+   *
    * You can also define this an environment variable defined as `CF_MYSHOPIFY_DOMAIN`
    */
   myshopifyDomain?: string;
 
   /**
    * Obtain this from the account page in the Customer Fields app.
-   * 
+   *
    * You can also define this an environment variable defined as `CF_PRIVATE_ACCESS_TOKEN`
    */
   privateAccessToken?: string;
-}
+};
 
 export class RequestDispatcher {
   apiUrl = 'https://api.customerfields.com';

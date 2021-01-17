@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "A client for using the Customer Fields REST API.",
   "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "author": "Kyle Kashuba <kyle@heliumdev.com>",
   "license": "MIT",
   "engines": {
@@ -10,8 +11,7 @@
   },
   "scripts": {
     "test": "jest",
-    "start": "ts-node-dev index.ts",
-    "build": "tsc --outDir lib",
+    "build": "tsc --project tsconfig.json -d --outDir lib",
     "prepublishOnly": "yarn build"
   },
   "dependencies": {

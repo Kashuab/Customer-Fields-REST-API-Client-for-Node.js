@@ -1,15 +1,15 @@
-# Customer Fields Rest API Client for Node.js
+# Customer Fields API Client for Node.js
 
 This package is currently experimental, expect multiple breaking changes to occur until the first stable release (version `1.0.0`)
 
 The purpose of this library is to abstract the burden of manually dispatching web requests to the Customer Fields REST API. We want to make the API easier and more accessible for developers, so they can focus on the more important things in software development.
 
-**Do not use this library directly in the browser. Doing so puts customers' data at risk by publically exposing your private access token.**
+**Do not use this library directly in the browser. Doing so puts customers' data at risk by publicly exposing your private access token.**
 
 Features:
 
 - Intuitive API with `async` functions
-- Written in TypeScript for your auto-completion pleasure
+- Written in TypeScript for your auto-completion convenience
 
 Coming soon:
 
@@ -25,16 +25,16 @@ Check out our [developer documentation](https://developers.customerfields.com/) 
 
 Start by installing the module into your project:
 
-`$ npm install --save customer-fields-api-client`
+`npm install --save customer-fields-api-client`
 
 Or if you prefer `yarn`:
 
-`$ yarn add customer-fields-api-client`
+`yarn add customer-fields-api-client`
 
 Here's some example usage:
 
 ```typescript
-import CF from 'customer-fields-api-client-node`;
+import CF from 'customer-fields-api-client-node';
 
 // Bonus points: put these in a .env file instead, and use the dotenv module to load it!
 process.env.CF_MYSHOPIFY_DOMAIN = 'your-shop.myshopify.com';
@@ -62,9 +62,11 @@ An error will be thrown if `document` is in the `window`. Again, *do not use thi
 
 Pull requests are always welcome! Start by cloning the repository:
 
-`$ git clone https://gitlab.com/heliumdev/customer-fields-api-client-node`
-`$ cd customer-fields-api-client-node/`
-`$ yarn`
+`git clone https://gitlab.com/heliumdev/customer-fields-api-client-node`
+
+`cd customer-fields-api-client-node/`
+
+`yarn`
 
 We use `jest` to run our tests:
 
