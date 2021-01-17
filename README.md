@@ -36,10 +36,10 @@ Or if you prefer `yarn`:
 Here's some example usage:
 
 ```typescript
-import CF from 'customer-fields-api-client-node';
+import CF, { config } from 'customer-fields-api-client-node';
 
 // Bonus points: put this environment variable in a .env file instead, and use the dotenv module to load it!
-process.env.CF_PRIVATE_ACCESS_TOKEN = '<your token>';
+config.privateAccessToken = process.env.CF_PRIVATE_ACCESS_TOKEN;
 
 const customers = await CF.Customer.find({});
 
