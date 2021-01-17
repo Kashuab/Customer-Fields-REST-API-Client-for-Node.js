@@ -1,13 +1,11 @@
-import { RequestDispatcher, RequestDispatcherInit } from './RequestDispatcher';
+import { dispatchRequest } from './dispatchRequest';
 import { get, set } from 'lodash';
 
-export class Customer extends RequestDispatcher {
+export class Customer {
   id?: string;
   data: Partial<BasicCustomerDataDict> & Record<string, any>;
 
-  constructor(data?: Record<string, any>, requestDispatcherInit?: RequestDispatcherInit) {
-    super(requestDispatcherInit);
-
+  constructor(data?: Record<string, any>) {
     this.data = data || {};
     this.id = this.data.id;
   }
@@ -53,7 +51,7 @@ export class Customer extends RequestDispatcher {
       endpoint += `/${this.id}`;
     }
 
-    const response = await this.dispatchRequest(endpoint, {
+    const response = await dispatchRequest(endpoint, {
       method: this.id ? 'PUT' : 'POST',
       body: JSON.stringify(payload),
     });

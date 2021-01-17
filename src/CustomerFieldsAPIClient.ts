@@ -1,12 +1,8 @@
 import { Customer } from './Customer';
-import { RequestDispatcher, RequestDispatcherInit } from './RequestDispatcher';
+import { dispatchRequest } from './dispatchRequest';
 
-export class CustomerFieldsAPIClient extends RequestDispatcher {
-  constructor(opts?: CustomerFieldsAPIClientOpts) {
-    super(opts);
-  }
-
-  public async searchCustomers(query: GetCustomersQuery, opts?: GetCustomersOpts): Promise<Customer[]> {
+export class CustomerFieldsAPIClient {
+  public static async searchCustomers(query: GetCustomersQuery, opts?: GetCustomersOpts): Promise<Customer[]> {
     const page = opts?.page || 1,
       limit = opts?.limit || 25,
       sortBy = opts?.sortBy || 'updated_at',
@@ -22,19 +18,14 @@ export class CustomerFieldsAPIClient extends RequestDispatcher {
       path += `&${key}=${value}`;
     });
 
-    const response = await this.dispatchRequest(path);
+    const response = await dispatchRequest(path);
     const customers = (await response.json()).customers || [];
 
     return customers.map((customer: Record<string, any>) => {
-      return new Customer(customer, {
-        privateAccessToken: this.privateAccessToken,
-        apiUrl: this.apiUrl,
-      });
+      return new Customer(customer);
     });
   }
 }
-
-export type CustomerFieldsAPIClientOpts = RequestDispatcherInit & {};
 
 export type GetCustomersQuery = {
   /**

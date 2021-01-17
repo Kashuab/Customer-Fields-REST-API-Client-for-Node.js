@@ -40,9 +40,7 @@ import CF from 'customer-fields-api-client-node';
 process.env.CF_MYSHOPIFY_DOMAIN = 'your-shop.myshopify.com';
 process.env.CF_PRIVATE_ACCESS_TOKEN = '<your token>';
 
-const cf = new CF();
-
-const customers = await cf.searchCustomers();
+const customers = await CF.searchCustomers();
 
 customers.forEach(customer => {
   console.log('Check out this customer:', customer.id, customer.shopify_id);
@@ -56,7 +54,7 @@ customer.set('birthday', new Date().toISOString());
 await customer.save();
 ```
 
-See more examples [in our `/example` directory.](example/index.ts)
+See more examples [in our `/examples` directory.](examples/index.ts)
 
 An error will be thrown if `document` is in the `window`. Again, *do not use this library in the browser.*
 
