@@ -40,7 +40,7 @@ import CF from 'customer-fields-api-client-node';
 process.env.CF_MYSHOPIFY_DOMAIN = 'your-shop.myshopify.com';
 process.env.CF_PRIVATE_ACCESS_TOKEN = '<your token>';
 
-const customers = await CF.searchCustomers();
+const customers = await CF.Customer.find({});
 
 customers.forEach(customer => {
   console.log('Check out this customer:', customer.id, customer.shopify_id);
