@@ -33,13 +33,51 @@ Or if you prefer `yarn`:
 
 `yarn add customer-fields-api-client`
 
+Next, import it into your project:
+
+```typescript
+import CF from 'customer-fields-api-client-node';
+```
+
+Now you need to provide `CF` your private access token. There are two ways to do this:
+
+1. Provide a `CF_PRIVATE_ACCESS_TOKEN` environment variable (recommended)
+
+Create an `.env` file with these contents in the root of your project:
+
+```
+CF_PRVIATE_ACCESS_TOKEN=your token
+```
+
+Then load it using the [`dotenv` module](https://www.npmjs.com/package/dotenv):
+
+```typescript
+// Make sure you load the env vars before importing CF
+import dotenv from 'dotenv';
+dotenv.config();
+
+import CF from 'customer-fields-api-client-node';
+// CF is now ready for use!
+```
+
+2. Configure the access token directly
+
+```typescript
+import CF from 'customer-fields-api-client-node';
+
+CF.config.privateAccessToken = 'your token'
+```
+
+To generate a private access token, visit the [account page](https://app.customerfields.com/account) in the Customer Fields app.
+
 Here's some example usage:
 
 ```typescript
-import CF, { config } from 'customer-fields-api-client-node';
+// Load the private access token into process.env
+import dotenv from 'dotenv';
+dotenv.config();
 
-// Bonus points: put this environment variable in a .env file instead, and use the dotenv module to load it!
-config.privateAccessToken = process.env.CF_PRIVATE_ACCESS_TOKEN;
+import CF from 'customer-fields-api-client-node';
 
 const customers = await CF.Customer.find({});
 

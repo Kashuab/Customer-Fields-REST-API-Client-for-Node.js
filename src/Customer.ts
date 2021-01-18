@@ -33,6 +33,7 @@ export class Customer {
     return this.get('state') == 'cf:pending';
   }
 
+  set(data: Record<string, any> & BasicCustomerDataDict): Customer;
   set(data: BasicCustomerDataDict): Customer;
   set<K extends BasicCustomerDataDictKey = BasicCustomerDataDictKey>(
     key: K | string,
