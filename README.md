@@ -33,13 +33,7 @@ Or if you prefer `yarn`:
 
 `yarn add customer-fields-api-client`
 
-Next, import it into your project:
-
-```typescript
-import CF from 'customer-fields-api-client-node';
-```
-
-Now you need to provide `CF` your private access token. There are two ways to do this:
+Before using the client, you need to provide your private access token. There are two ways to do this:
 
 1. Provide a `CF_PRIVATE_ACCESS_TOKEN` environment variable (recommended)
 
@@ -70,7 +64,7 @@ CF.config.privateAccessToken = 'your token'
 
 To generate a private access token, visit the [account page](https://app.customerfields.com/account) in the Customer Fields app.
 
-Here's some example usage:
+Now you're ready to start using it. Here's some example usage:
 
 ```typescript
 // Load the private access token into process.env
