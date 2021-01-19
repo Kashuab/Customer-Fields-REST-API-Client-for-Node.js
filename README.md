@@ -91,6 +91,15 @@ See more examples [in our `/examples` directory.](examples)
 
 An error will be thrown if `document` is in the `window`. Again, *do not use this library in the browser.*
 
+## Playground
+
+The project includes a script that allows you to experiment with the client in the terminal.
+
+1. Clone this repo
+2. `cd customer-fields-api-client-node`
+3. `yarn`
+4. `yarn icc`
+
 ## Error handling
 
 Many different errors can be thrown as a result of attempts to save bad data. Here's how you can catch them:
