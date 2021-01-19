@@ -14,6 +14,7 @@ if (!process.env.CF_PRIVATE_ACCESS_TOKEN) {
 (async () => {
   if (!fs.existsSync('./lib')) {
     console.log('Missing lib folder! Building client...');
+
     await new Promise((resolve, reject) => {
       exec('npm run build').on('exit', (code) => {
         if (code != 0) {
@@ -30,7 +31,7 @@ if (!process.env.CF_PRIVATE_ACCESS_TOKEN) {
 
   console.log(
     'You can reference the global CF variable to get started.\n',
-    'Try running: CF.Customer.find({}).then(([customers]) => console.log(customers.length));\n\n',
+    'Try running: const [customers] = await CF.Customer.find({});\n\n',
   );
 
   repl.start();
