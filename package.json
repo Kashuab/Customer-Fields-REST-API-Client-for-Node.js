@@ -10,6 +10,7 @@
     "node": ">=0.14"
   },
   "scripts": {
+    "icc": "node interactive-console.js",
     "example": "ts-node-dev examples/index.ts",
     "test": "jest",
     "build": "tsc --project tsconfig.json -d --outDir lib",
