@@ -1,5 +1,5 @@
 import { Model, PaginatedResponse } from './Model';
-import { dispatchRequest, PaginationOpts } from '../dispatchRequest';
+import { dispatchRequest, PaginationOpts } from '../utils/dispatchRequest';
 import { RequestInit, Response } from 'node-fetch';
 import { URLSearchParams } from 'url';
 
@@ -30,6 +30,18 @@ export type DataColumnDict = {
   readonly updatedAt: string | null;
 };
 
+export type DataColumnFromServerDict = {
+  id: string | null;
+  key: string;
+  label: string;
+  expanded_label: string;
+  data_type: ColumnDataType;
+  dedicated: boolean;
+  read_only: boolean;
+  readonly created_at: string | null;
+  readonly updated_at: string | null;
+};
+
 export class DataColumn extends Model implements DataColumnDict {
   static Errors = {};
 
@@ -42,7 +54,7 @@ export class DataColumn extends Model implements DataColumnDict {
     return await null;
   }
 
-  id = '';
+  id: string | null = '';
   key = '';
   dataType: ColumnDataType = 'text';
   label = '';
@@ -55,6 +67,7 @@ export class DataColumn extends Model implements DataColumnDict {
   constructor(column: DataColumnDict) {
     super();
 
+    this.id = column.id;
     this.key = column.key;
     this.dataType = column.dataType;
     this.label = column.label;
@@ -87,9 +100,19 @@ async function findDataColumns(opts?: FindDataColumnsOpts): Promise<DataColumn[]
     throw new Error(`Failed to find data columns, receieved error code ${response.status}: ${response.statusText}`);
   }
 
-  const dataColumns: DataColumnDict[] = (await response.json()).data_columns || [];
+  const dataColumns: DataColumnFromServerDict[] = (await response.json()).data_columns || [];
   const dataColumnInstances = dataColumns.map((dataColumn) => {
-    return new DataColumn(dataColumn);
+    return new DataColumn({
+      id: dataColumn.id,
+      key: dataColumn.key,
+      dataType: dataColumn.data_type,
+      label: dataColumn.label,
+      expandedLabel: dataColumn.expanded_label,
+      dedicated: dataColumn.dedicated,
+      readOnly: dataColumn.read_only,
+      createdAt: dataColumn.created_at,
+      updatedAt: dataColumn.updated_at,
+    });
   });
 
   return dataColumnInstances;

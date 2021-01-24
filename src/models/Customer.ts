@@ -1,4 +1,4 @@
-import { dispatchRequest } from '../dispatchRequest';
+import { dispatchRequest } from '../utils/dispatchRequest';
 import { get, set } from 'lodash';
 import { Model, PaginatedResponse } from './Model';
 

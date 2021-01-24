@@ -7,11 +7,12 @@ import { updateCustomer } from './updateCustomer';
 import { createCustomer } from './createCustomer';
 import { listPagedCustomers } from './listPagedCustomers';
 import { createAndInviteCustomer } from './createAndInviteCustomer';
+import { listDataColumns } from './listDataColumns';
 
 /*
   Or uncomment this and configure them directly:
 
-  import { config } from '../src/config';
+  import { config } from '../src';
   config.privateAccessToken = '<your token>';
 */
 
@@ -21,5 +22,6 @@ import { createAndInviteCustomer } from './createAndInviteCustomer';
   await updateCustomer(customers[0]);
   await createCustomer();
   await createAndInviteCustomer();
+  await listDataColumns();
   await listPagedCustomers();
 })();

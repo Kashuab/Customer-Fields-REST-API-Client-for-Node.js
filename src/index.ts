@@ -1,7 +1,7 @@
 import { Customer } from './models/Customer';
 import { DataColumn } from './models/DataColumn';
 import { throwIfInBrowser } from './utils/throwIfInBrowser';
-import { config } from './config';
+import { config } from './utils/config';
 import { allErrors as Errors } from './errors/Errors';
 
 throwIfInBrowser();

@@ -1,7 +1,7 @@
 import fetch, { RequestInit, Response } from 'node-fetch';
 import { config } from './config';
-import { APIErrors, errorToClassMap, KeyOfAPIErrors } from './errors/Errors';
-import { _ErrorConstructor } from './models/Model';
+import { APIErrors, errorToClassMap, KeyOfAPIErrors } from '../errors/Errors';
+import { _ErrorConstructor } from '../models/Model';
 
 export type PaginationOpts = {
   page: number;
