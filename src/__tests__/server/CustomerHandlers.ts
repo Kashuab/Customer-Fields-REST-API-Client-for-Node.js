@@ -2,6 +2,8 @@ import { rest } from 'msw';
 import { BasicCustomerDataDict, CustomerSaveRequestPayload } from '../../models/Customer';
 import { generateCustomer } from './data/generateCustomer';
 import { sortBy } from 'lodash';
+import { APIErrors } from '../../errors/Errors';
+import { handleMockErrorResponse } from './Server';
 
 export const customers: BasicCustomerDataDict[] = [];
 
@@ -9,8 +11,13 @@ for (let i = 0; i < 1000; i++) {
   customers.push(generateCustomer());
 }
 
+export const emailInUse = 'already_in_use@website.com';
+
 export default [
   rest.get('http://localhost/api/v2/customers/search.json', (req, res, ctx) => {
+    const err = handleMockErrorResponse(res, ctx);
+    if (err) return err;
+
     const page = parseInt(req.url.searchParams.get('page') || '1'),
       limit = parseInt(req.url.searchParams.get('limit') || '25'),
       sortKey = (req.url.searchParams.get('sort_by') as keyof BasicCustomerDataDict) || 'updated_at',
@@ -24,7 +31,18 @@ export default [
     return res(ctx.json({ customers: sortedCustomers }));
   }),
   rest.post('http://localhost/api/v2/customers', (req, res, ctx) => {
+    const err = handleMockErrorResponse(res, ctx);
+    if (err) return err;
+
     const { customer, form_id } = req.body as CustomerSaveRequestPayload;
+
+    if (customer.email == emailInUse) {
+      const errors: APIErrors = { email: ['has already been taken'] };
+
+      ctx.status(422);
+
+      return res(ctx.json({ errors }));
+    }
 
     const updatedCustomer: BasicCustomerDataDict = {
       ...customer,
@@ -39,6 +57,9 @@ export default [
     return res(ctx.json({ customer: updatedCustomer }));
   }),
   rest.put('http://localhost/api/v2/customers/:id', (req, res, ctx) => {
+    const err = handleMockErrorResponse(res, ctx);
+    if (err) return err;
+
     const { customer, form_id } = req.body as CustomerSaveRequestPayload;
 
     const updatedCustomer: BasicCustomerDataDict = {

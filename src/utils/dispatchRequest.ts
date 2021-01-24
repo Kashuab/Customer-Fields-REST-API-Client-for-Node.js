@@ -1,6 +1,6 @@
 import fetch, { RequestInit, Response } from 'node-fetch';
 import { config } from './config';
-import { APIErrors, errorToClassMap, KeyOfAPIErrors } from '../errors/Errors';
+import { AllAPIErrors, APIErrors, errorToClassMap, KeyOfAPIErrors } from '../errors/Errors';
 import { _ErrorConstructor } from '../models/Model';
 
 export type PaginationOpts = {
@@ -75,7 +75,7 @@ export class MissingResponseErrorClassError extends Error {
   }
 }
 
-export function getErrorClassFromServerErrors(errors: APIErrors): typeof Error | undefined {
+export function getErrorClassFromServerErrors(errors: AllAPIErrors): typeof Error | undefined {
   let errorClass: typeof Error | undefined;
   const errorKeys: KeyOfAPIErrors[] = Object.keys(errors) as KeyOfAPIErrors[];
 
@@ -100,4 +100,4 @@ export function getErrorClassFromServerErrors(errors: APIErrors): typeof Error |
   });
 
   return errorClass;
-};
+}

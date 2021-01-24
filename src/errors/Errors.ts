@@ -1,3 +1,4 @@
+import { DeepPartial } from 'utility-types';
 import { _ErrorConstructor } from '../models/Model';
 
 export class EmailAlreadyTakenError extends Error {
@@ -16,12 +17,14 @@ export class EmailContainsInvalidDomainError extends Error {
   }
 }
 
-export type APIErrors = {
+export type AllAPIErrors = {
   email: ['has already been taken', 'contains an invalid domain name'];
 };
 
-export type KeyOfAPIErrors = keyof APIErrors;
-export type APIErrorMessage<K extends KeyOfAPIErrors> = APIErrors[K][number];
+export type APIErrors = DeepPartial<AllAPIErrors>;
+
+export type KeyOfAPIErrors = keyof AllAPIErrors;
+export type APIErrorMessage<K extends KeyOfAPIErrors> = AllAPIErrors[K][number];
 
 /* eslint-disable */
 export type APIErrorToClassMap = Record<

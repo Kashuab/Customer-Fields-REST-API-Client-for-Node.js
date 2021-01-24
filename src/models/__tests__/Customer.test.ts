@@ -1,4 +1,5 @@
-import { update } from 'lodash';
+import { Errors } from '../..';
+import { setNextError } from '../../__tests__/server/Server';
 import { Customer } from '../Customer';
 
 describe('Customer', (): void => {
@@ -103,5 +104,21 @@ describe('Customer', (): void => {
     // as a result of the PUT to update the customer data
     expect(latestUpdatedAt).not.toBe(previousUpdatedAt);
     expect(latestUpdatedAt > previousUpdatedAt).toBe(true);
+  });
+
+  test('throws an email already taken error', async () => {
+    const customer = new Customer({ email: 'thisdoesnt@matter.com' });
+
+    let caughtError = false;
+
+    try {
+      setNextError(422, { email: ['has already been taken'] });
+      await customer.save();
+    } catch (err) {
+      caughtError = true;
+      expect(err).toBeInstanceOf(Errors.EmailAlreadyTakenError);
+    }
+
+    expect(caughtError).toBe(true);
   });
 });
