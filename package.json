@@ -7,7 +7,7 @@
   "author": "Kyle Kashuba <kyle@heliumdev.com>",
   "license": "MIT",
   "engines": {
-    "node": ">=0.14"
+    "node": ">=0.10"
   },
   "scripts": {
     "icc": "yarn build; node --experimental-repl-await interactive-console.js",
@@ -21,6 +21,7 @@
     "node-fetch": "^2.6.1"
   },
   "devDependencies": {
+    "@types/faker": "^5.1.5",
     "@types/lodash": "^4.14.167",
     "@types/node": "^14.14.21",
     "@types/node-fetch": "^2.5.8",
@@ -35,8 +36,10 @@
     "eslint-plugin-prettier": "^3.3.0",
     "eslint-plugin-react": "^7.22.0",
     "eslint-plugin-react-hooks": "^4.2.0",
+    "faker": "^5.1.0",
     "hygen": "^6.0.4",
     "jest": "^26.6.3",
+    "msw": "^0.25.0",
     "prettier": "^2.2.1",
     "ts-jest": "^26.4.4",
     "ts-node-dev": "^1.1.1",

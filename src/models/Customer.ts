@@ -30,10 +30,8 @@ export class Customer extends Model {
 
   set(data: Record<string, any> & BasicCustomerDataDict): Customer;
   set(data: BasicCustomerDataDict): Customer;
-  set<K extends BasicCustomerDataDictKey = BasicCustomerDataDictKey>(
-    key: K | string,
-    value: BasicCustomerDataDict[K],
-  ): Customer;
+  set<K extends BasicCustomerDataDictKey = BasicCustomerDataDictKey>(key: K, value: BasicCustomerDataDict[K]): Customer;
+  set(key: string, value: any): Customer;
   set(dataOrKey: BasicCustomerDataDict | string, value?: unknown): Customer {
     if (typeof dataOrKey == 'string') {
       this.data = set(this.data, dataOrKey, value);
@@ -174,7 +172,7 @@ export type BasicCustomerDataDict = {
   readonly marketing_opt_in_level?: string;
   readonly orders_count?: number;
   readonly shopify_id?: number;
-  readonly state?: 'enabled' | 'invited' | 'declined' | 'disabled' | 'cf:pending' | 'cf:denied';
+  readonly state?: CustomerState;
   readonly total_spent?: number;
 
   /**
@@ -184,6 +182,8 @@ export type BasicCustomerDataDict = {
 
   readonly verified_email?: boolean;
 };
+
+export type CustomerState = 'enabled' | 'invited' | 'declined' | 'disabled' | 'cf:pending' | 'cf:denied';
 
 export type CustomerSaveOpts = {
   formId?: string;
