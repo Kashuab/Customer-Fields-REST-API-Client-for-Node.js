@@ -27,7 +27,7 @@ if (!process.env.CF_PRIVATE_ACCESS_TOKEN) {
     });
   }
 
-  globalThis.CF = require('./lib');
+  global.CF = require('./lib');
 
   console.log(
     'You can reference the global CF variable to get started.\n',

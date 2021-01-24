@@ -1,0 +1,2 @@
+# We only care about .ts and .tsx files
+**/*.js

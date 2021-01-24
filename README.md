@@ -97,8 +97,8 @@ The project includes a script that allows you to experiment with the client in t
 
 1. Clone this repo
 2. `cd customer-fields-api-client-node`
-3. `yarn`
-4. `yarn icc`
+3. `yarn` (or `npm install`)
+4. `yarn icc` or (`npm run icc`)
 
 ## Error handling
 

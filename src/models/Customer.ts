@@ -1,29 +1,20 @@
-import { dispatchRequest } from './dispatchRequest';
+import { dispatchRequest } from '../dispatchRequest';
 import { get, set } from 'lodash';
-import { RequestInit, Response } from 'node-fetch';
-import {
-  CustomerErrors,
-  getCustomerError,
-  EmailAlreadyTakenError,
-  EmailContainsInvalidDomainError,
-} from './errors/CustomerErrors';
+import { Model, PaginatedResponse } from './Model';
 
 export type CustomerDataDict = BasicCustomerDataDict & Record<string, any>;
 
-export class Customer {
+export class Customer extends Model {
   id?: string;
   shopifyId?: number;
   data: CustomerDataDict;
-
-  static Errors = {
-    EmailAlreadyTakenError,
-    EmailContainsInvalidDomainError,
-  };
 
   static find = findCustomers;
   static findById = findCustomerById;
 
   constructor(data?: CustomerDataDict) {
+    super();
+
     this.data = data || {};
     this.id = this.data.id;
     this.shopifyId = this.data.shopify_id;
@@ -31,6 +22,10 @@ export class Customer {
 
   get isPending(): boolean {
     return this.get('state') == 'cf:pending';
+  }
+
+  get isDenied(): boolean {
+    return this.get('state') == 'cf:denied';
   }
 
   set(data: Record<string, any> & BasicCustomerDataDict): Customer;
@@ -71,7 +66,7 @@ export class Customer {
       endpoint += `/${this.id}`;
     }
 
-    const response = await dispatchCustomerRequest(endpoint, {
+    const response = await dispatchRequest(endpoint, {
       method: this.id ? 'PUT' : 'POST',
       body: JSON.stringify(payload),
     });
@@ -99,7 +94,7 @@ export class Customer {
       throw new Error('Customer must have a shopify ID before sending an invite');
     }
 
-    const response = await dispatchCustomerRequest(`/customers/${this.id}/invite`, { method: 'POST' });
+    const response = await dispatchRequest(`/customers/${this.id}/invite`, { method: 'POST' });
 
     this.set('state', 'invited');
 
@@ -112,19 +107,6 @@ export class Customer {
     return this;
   }
 }
-
-/* eslint-disable */
-export type PaginatedResponse<T> = Promise<
-  [
-    T,
-    {
-      page: number;
-      next?: () => PaginatedResponse<T>;
-      prev?: () => PaginatedResponse<T>;
-    }
-  ]
->;
-/* eslint-disable */
 
 export type CustomerAddressDict = {
   id?: string;
@@ -192,7 +174,7 @@ export type BasicCustomerDataDict = {
   readonly marketing_opt_in_level?: string;
   readonly orders_count?: number;
   readonly shopify_id?: number;
-  readonly state?: 'enabled' | 'invited' | 'declined' | 'disabled' | 'cf:pending';
+  readonly state?: 'enabled' | 'invited' | 'declined' | 'disabled' | 'cf:pending' | 'cf:denied';
   readonly total_spent?: number;
 
   /**
@@ -265,31 +247,8 @@ export type GetCustomersOpts = {
   formId?: string;
 };
 
-async function dispatchCustomerRequest(path: string, fetchInit?: RequestInit | undefined): Promise<Response> {
-  const response = await dispatchRequest(path, fetchInit);
-
-  if (!response.ok) {
-    let errors: CustomerErrors;
-
-    try {
-      errors = (await response.json()).errors;
-    } catch (err) {
-      console.error(err);
-      throw new Error(`Failed to dispatch request, received status code ${response.status}: ${response.statusText}`);
-    }
-
-    const ErrorClass = getCustomerError(errors);
-
-    if (ErrorClass) {
-      throw new ErrorClass();
-    }
-  }
-
-  return response;
-}
-
 async function findCustomerById(id: string): Promise<Customer | null> {
-  const response = await dispatchCustomerRequest(`/customers/${id}.json`);
+  const response = await dispatchRequest(`/customers/${id}.json`);
   if (!response.ok) {
     throw new Error(`Failed to find customer by ID, receieved error code ${response.status}: ${response.statusText}`);
   }
@@ -299,7 +258,10 @@ async function findCustomerById(id: string): Promise<Customer | null> {
   return customer ? new Customer(customer) : null;
 }
 
-async function findCustomers(query: GetCustomersQuery, opts?: GetCustomersOpts): PaginatedResponse<Customer[]> {
+async function findCustomers(
+  query: GetCustomersQuery,
+  opts?: GetCustomersOpts,
+): Promise<PaginatedResponse<Customer[]>> {
   const page = opts?.page || 1,
     limit = opts?.limit || 25,
     sortBy = opts?.sortBy || 'updated_at',
@@ -315,7 +277,7 @@ async function findCustomers(query: GetCustomersQuery, opts?: GetCustomersOpts):
     path += `&${key}=${value}`;
   });
 
-  const response = await dispatchCustomerRequest(path);
+  const response = await dispatchRequest(path);
 
   if (!response.ok) {
     throw new Error(`Failed to find customers, receieved error code ${response.status}: ${response.statusText}`);

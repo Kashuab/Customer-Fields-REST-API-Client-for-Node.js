@@ -10,7 +10,7 @@
     "node": ">=0.14"
   },
   "scripts": {
-    "icc": "node --experimental-repl-await interactive-console.js",
+    "icc": "yarn build; node --experimental-repl-await interactive-console.js",
     "example": "ts-node-dev examples/index.ts",
     "test": "jest",
     "build": "tsc --project tsconfig.json -d --outDir lib",

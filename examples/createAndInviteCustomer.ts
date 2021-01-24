@@ -1,4 +1,4 @@
-import { Customer } from '../src';
+import { Customer, Errors } from '../src';
 
 export async function createAndInviteCustomer(): Promise<Customer | undefined> {
   const customer = new Customer({
@@ -10,7 +10,7 @@ export async function createAndInviteCustomer(): Promise<Customer | undefined> {
   try {
     await customer.save();
   } catch (err) {
-    if (err instanceof Customer.Errors.EmailAlreadyTakenError) {
+    if (err instanceof Errors.EmailAlreadyTakenError) {
       console.error('You must specify an email that is not already in use!');
       return;
     }
