@@ -1,6 +1,7 @@
 import { dispatchRequest } from '../utils/dispatchRequest';
 import { get, set } from 'lodash';
 import { Model, PaginatedResponse } from './Model';
+import { MissingCustomerIdError, MissingCustomerShopifyIdError } from '../errors/Errors';
 
 export type CustomerDataDict = BasicCustomerDataDict & Record<string, any>;
 
@@ -75,11 +76,6 @@ export class Customer extends Model {
       body: JSON.stringify(payload),
     });
 
-    if (!response.ok) {
-      console.error(await response.text());
-      throw new Error(`Failed to save customer, receieved error code ${response.status}: ${response.statusText}`);
-    }
-
     const customer: CustomerDataDict = (await response.json()).customer;
 
     this.id = customer.id;
@@ -93,22 +89,16 @@ export class Customer extends Model {
 
   async sendInvite(): Promise<Customer> {
     if (!this.id) {
-      throw new Error('Customer must have an ID before sending an invite');
+      throw new MissingCustomerIdError('Customer must have an ID before sending an invite');
     }
 
     if (!this.shopifyId) {
-      throw new Error('Customer must have a shopify ID before sending an invite');
+      throw new MissingCustomerShopifyIdError('Customer must have a shopify ID before sending an invite');
     }
 
-    const response = await dispatchRequest(`/customers/${this.id}/invite`, { method: 'POST' });
+    await dispatchRequest(`/customers/${this.id}/invite`, { method: 'POST' });
 
     this.set('state', 'invited');
-
-    if (!response.ok) {
-      throw new Error(
-        `Failed to send invite to customer, receieved error code ${response.status}: ${response.statusText}`,
-      );
-    }
 
     return this;
   }

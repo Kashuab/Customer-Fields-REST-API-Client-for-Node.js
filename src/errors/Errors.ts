@@ -17,6 +17,22 @@ export class EmailContainsInvalidDomainError extends Error {
   }
 }
 
+export class MissingCustomerShopifyIdError extends Error {
+  constructor(message?: string) {
+    super(message);
+
+    this.name = 'MissingShopifyIdError';
+  }
+}
+
+export class MissingCustomerIdError extends Error {
+  constructor(message?: string) {
+    super(message);
+
+    this.name = 'MissingIdError';
+  }
+}
+
 export type AllAPIErrors = {
   email: ['has already been taken', 'contains an invalid domain name'];
 };
@@ -43,4 +59,6 @@ export const errorToClassMap: APIErrorToClassMap = {
 export const allErrors = {
   EmailAlreadyTakenError,
   EmailContainsInvalidDomainError,
+  MissingCustomerIdError,
+  MissingCustomerShopifyIdError,
 };

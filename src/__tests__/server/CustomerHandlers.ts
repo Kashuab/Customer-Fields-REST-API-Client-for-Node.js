@@ -3,7 +3,8 @@ import { BasicCustomerDataDict, CustomerSaveRequestPayload } from '../../models/
 import { generateCustomer } from './data/generateCustomer';
 import { sortBy } from 'lodash';
 import { APIErrors } from '../../errors/Errors';
-import { handleMockErrorResponse } from './Server';
+import { getMockErrorResponse } from './Server';
+import faker from 'faker';
 
 export const customers: BasicCustomerDataDict[] = [];
 
@@ -15,7 +16,7 @@ export const emailInUse = 'already_in_use@website.com';
 
 export default [
   rest.get('http://localhost/api/v2/customers/search.json', (req, res, ctx) => {
-    const err = handleMockErrorResponse(res, ctx);
+    const err = getMockErrorResponse(res, ctx);
     if (err) return err;
 
     const page = parseInt(req.url.searchParams.get('page') || '1'),
@@ -31,7 +32,7 @@ export default [
     return res(ctx.json({ customers: sortedCustomers }));
   }),
   rest.post('http://localhost/api/v2/customers', (req, res, ctx) => {
-    const err = handleMockErrorResponse(res, ctx);
+    const err = getMockErrorResponse(res, ctx);
     if (err) return err;
 
     const { customer, form_id } = req.body as CustomerSaveRequestPayload;
@@ -57,7 +58,7 @@ export default [
     return res(ctx.json({ customer: updatedCustomer }));
   }),
   rest.put('http://localhost/api/v2/customers/:id', (req, res, ctx) => {
-    const err = handleMockErrorResponse(res, ctx);
+    const err = getMockErrorResponse(res, ctx);
     if (err) return err;
 
     const { customer, form_id } = req.body as CustomerSaveRequestPayload;
@@ -69,6 +70,22 @@ export default [
     };
 
     return res(ctx.json({ customer: updatedCustomer }));
+  }),
+  rest.post('http://localhost/api/v2/customers/:id/invite', (req, res, ctx) => {
+    const err = getMockErrorResponse(res, ctx);
+    if (err) return err;
+
+    return res(
+      ctx.json({
+        customer_invite: {
+          to: faker.internet.email(),
+          from: faker.internet.email(),
+          subject: 'Customer account activation',
+          custom_message: '',
+          bcc: [],
+        },
+      }),
+    );
   }),
 ];
 

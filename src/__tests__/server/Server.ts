@@ -12,7 +12,7 @@ export const setNextError = (statusCode: number, errors: APIErrors): void => {
   nextErrorPayload = errors;
 };
 
-export const handleMockErrorResponse = (
+export const getMockErrorResponse = (
   res: ResponseComposition<any>,
   ctx: RestContext,
 ): ReturnType<ResponseComposition<any>> | void => {

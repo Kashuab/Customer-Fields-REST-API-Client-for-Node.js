@@ -1,9 +1,10 @@
 import { Errors } from '../..';
 import { setNextError } from '../../__tests__/server/Server';
 import { Customer } from '../Customer';
+import faker from 'faker';
 
 describe('Customer', (): void => {
-  test('can initialize', (): void => {
+  test('can initialize properly', (): void => {
     let customer = new Customer();
 
     expect(customer.data).toEqual({});
@@ -93,8 +94,7 @@ describe('Customer', (): void => {
     const previousUpdatedAt = customer.get('updated_at') as string;
 
     // Now, update that customer
-
-    customer.set('first_name', 'Not Joe');
+    customer.set('first_name', faker.name.firstName());
 
     await customer.save();
 
@@ -107,7 +107,7 @@ describe('Customer', (): void => {
   });
 
   test('throws an email already taken error', async () => {
-    const customer = new Customer({ email: 'thisdoesnt@matter.com' });
+    const customer = new Customer({ email: faker.internet.email() });
 
     let caughtError = false;
 
@@ -120,5 +120,23 @@ describe('Customer', (): void => {
     }
 
     expect(caughtError).toBe(true);
+  });
+
+  test('can send a customer invite', async () => {
+    const customer = new Customer({ email: faker.internet.email() });
+
+    try {
+      await customer.sendInvite();
+    } catch (err) {
+      expect(err).toBeInstanceOf(Errors.MissingCustomerIdError);
+    }
+
+    await customer.save();
+
+    expect(customer.get('state')).not.toBe('invited');
+
+    await customer.sendInvite();
+
+    expect(customer.get('state')).toBe('invited');
   });
 });
