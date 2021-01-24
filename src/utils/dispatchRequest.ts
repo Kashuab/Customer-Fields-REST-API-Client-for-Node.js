@@ -11,8 +11,6 @@ export type PaginationOpts = {
 export async function dispatchRequest(path: string, opts?: RequestInit): Promise<Response> {
   const { apiPrefix, apiUrl, privateAccessToken } = config;
 
-  console.log('WoW!');
-
   if (!privateAccessToken) {
     throw new Error('You must provide a private access token before any request can be dispatched');
   }

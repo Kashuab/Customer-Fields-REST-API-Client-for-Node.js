@@ -1,3 +1,4 @@
+import { update } from 'lodash';
 import { Customer } from '../Customer';
 
 describe('Customer', (): void => {
@@ -63,5 +64,44 @@ describe('Customer', (): void => {
     const [customers] = await Customer.find({}, { limit: 25 });
 
     expect(customers.length).toBe(25);
+  });
+
+  test('can save a customer', async (): Promise<void> => {
+    const customer = new Customer({
+      first_name: 'Joe',
+      last_name: 'Mama',
+      email: 'hahagoteem@website.com',
+    });
+
+    expect(customer.id).toBeUndefined();
+    expect(customer.shopifyId).toBeUndefined();
+    expect(customer.submittedFormIds.includes('d34Jnp')).toBe(false);
+    expect(customer.get('created_at')).toBeUndefined();
+    expect(customer.get('updated_at')).toBeUndefined();
+    expect(customer.hasSubmittedForm('d34Jnp')).toBe(false);
+
+    await customer.save({ formId: 'd34Jnp' });
+
+    expect(customer.id).toBeDefined();
+    expect(customer.shopifyId).toBeDefined();
+    expect(customer.submittedFormIds.includes('d34Jnp')).toBe(true);
+    expect(customer.get('created_at')).toBeDefined();
+    expect(customer.get('updated_at')).toBeDefined();
+    expect(customer.hasSubmittedForm('d34Jnp')).toBe(true);
+
+    const previousUpdatedAt = customer.get('updated_at') as string;
+
+    // Now, update that customer
+
+    customer.set('first_name', 'Not Joe');
+
+    await customer.save();
+
+    const latestUpdatedAt = customer.get('updated_at') as string;
+
+    // updated_at should now be greater (later) than the previous updated_at,
+    // as a result of the PUT to update the customer data
+    expect(latestUpdatedAt).not.toBe(previousUpdatedAt);
+    expect(latestUpdatedAt > previousUpdatedAt).toBe(true);
   });
 });

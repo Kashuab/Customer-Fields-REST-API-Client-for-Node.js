@@ -8,6 +8,7 @@ export class Customer extends Model {
   id?: string;
   shopifyId?: number;
   data: CustomerDataDict;
+  submittedFormIds: string[] = [];
 
   static find = findCustomers;
   static findById = findCustomerById;
@@ -18,6 +19,7 @@ export class Customer extends Model {
     this.data = data || {};
     this.id = this.data.id;
     this.shopifyId = this.data.shopify_id;
+    this.submittedFormIds = this.data._$form_ids || [];
   }
 
   get isPending(): boolean {
@@ -26,6 +28,10 @@ export class Customer extends Model {
 
   get isDenied(): boolean {
     return this.get('state') == 'cf:denied';
+  }
+
+  hasSubmittedForm(formId: string): boolean {
+    return this.submittedFormIds.includes(formId);
   }
 
   set(data: Record<string, any> & BasicCustomerDataDict): Customer;
@@ -78,6 +84,8 @@ export class Customer extends Model {
 
     this.id = customer.id;
     this.shopifyId = customer.shopify_id;
+    this.submittedFormIds = customer._$form_ids || [];
+
     this.set(customer);
 
     return this;
@@ -181,6 +189,7 @@ export type BasicCustomerDataDict = {
   readonly updated_at?: string;
 
   readonly verified_email?: boolean;
+  readonly _$form_ids?: string[];
 };
 
 export type CustomerState = 'enabled' | 'invited' | 'declined' | 'disabled' | 'cf:pending' | 'cf:denied';
@@ -190,7 +199,7 @@ export type CustomerSaveOpts = {
 };
 
 export type CustomerSaveRequestPayload = {
-  customer: Record<string, any>;
+  customer: BasicCustomerDataDict & Record<string, any>;
   form_id?: string;
 };
 

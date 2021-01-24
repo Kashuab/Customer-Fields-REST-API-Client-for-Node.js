@@ -2,7 +2,6 @@ import { config } from '../utils/config';
 import { server } from './server/Server';
 
 beforeAll(() => {
-  console.log('Listen!')
   server.listen({ onUnhandledRequest: 'error' });
 
   config.apiUrl = 'http://localhost';
