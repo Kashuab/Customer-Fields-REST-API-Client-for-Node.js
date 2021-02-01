@@ -1,8 +1,8 @@
-# Customer Fields API Client for Node.js
+# Customer Fields REST API Client for Node.js
 
 This package is currently experimental, expect multiple breaking changes to occur until the first stable release (version `1.0.0`)
 
-The purpose of this library is to abstract the burden of manually dispatching web requests to the Customer Fields REST API. We want to make the API easier and more accessible for developers, so they can focus on the more important things in software development.
+The purpose of this library is to mitigate the burden of manually dispatching web requests to the Customer Fields REST API by abstracting it with a simple object-oriented approach. We want to make the API more accessible for developers, so that precious time can be spent more in achieving goals.
 
 **Do not use this library directly in the browser. Doing so puts customers' data at risk by publicly exposing your private access token.**
 
@@ -50,14 +50,14 @@ Then load it using the [`dotenv` module](https://www.npmjs.com/package/dotenv):
 import dotenv from 'dotenv';
 dotenv.config();
 
-import CF from 'customer-fields-api-client-node';
+import CF from 'customer-fields-api-client';
 // CF is now ready for use!
 ```
 
 2. Configure the access token directly
 
 ```typescript
-import CF from 'customer-fields-api-client-node';
+import CF from 'customer-fields-api-client';
 
 CF.config.privateAccessToken = 'your token'
 ```
@@ -71,7 +71,7 @@ Now you're ready to start using it. Here's some example usage:
 import dotenv from 'dotenv';
 dotenv.config();
 
-import CF from 'customer-fields-api-client-node';
+import CF from 'customer-fields-api-client';
 
 const customers = await CF.Customer.find({});
 
@@ -95,32 +95,31 @@ An error will be thrown if `document` is in the `window`. Again, *do not use thi
 
 The project includes a script that allows you to experiment with the client in the terminal.
 
-1. Clone this repo
-2. `cd customer-fields-api-client-node`
-3. `yarn` (or `npm install`)
-4. `yarn icc` or (`npm run icc`)
+1. Clone this repo and `cd` into it
+2. `yarn` (or `npm install`)
+3. `yarn icc` or (`npm run icc`)
 
 ## Error handling
 
 Many different errors can be thrown as a result of attempts to save bad data. Here's how you can catch them:
 
 ```typescript
-import { Customer } from 'customer-fields-api-client-node';
+import CF from 'customer-fields-api-client';
 
-const customer = new Customer({
+const customer = new CF.Customer({
   email: 'some_email_in_use@website.com'
 });
 
 try {
   await customer.save();
 } catch (err) {
-  if (err instanceof Customer.Errors.EmailAlreadyTakenError) {
+  if (err instanceof CF.Errors.EmailAlreadyTakenError) {
     console.log('Uh oh!')
   }
 }
 ```
 
-You can explore the `Customer.Errors` object to see what errors you need to handle.
+This is very convenient, especially if you need to inform another source of what needs to be corrected (i.e. an account form in another environment)
 
 ## TypeScript goodness
 
@@ -129,7 +128,9 @@ We've got some awesome typings to make your life easier. Simple problems can get
 For example:
 
 ```typescript
-const customer = new Customer();
+import CF from 'customer-fields-api-client';
+
+const customer = new CF.Customer();
 
 // 1234 is not assignable to type 'string'
 customer.set('email', 1234);
@@ -149,27 +150,23 @@ customer.set('default_address', {
 
 ## Contributing
 
-Pull requests are always welcome! Start by cloning the repository:
+Pull requests are always welcome! Start by forking the repository, cloning it, then `cd`ing into it.
 
-`git clone https://gitlab.com/heliumdev/customer-fields-api-client-node`
+Run `yarn test` to make sure everything is set up correctly.
 
-`cd customer-fields-api-client-node/`
+We expect to see unit tests alongside pull requests.
 
-`yarn`
-
-We use `jest` to run our tests:
-
-`$ yarn test`
+You can find our tests in `src/__tests`. In some cases you may need to mock a server response, see `src/__tests__/server/CustomerHandlers.ts` as a reference. 
 
 Run this command to build the client into the `lib` folder:
 
-`$ yarn build` 
+`yarn build` 
 
 You can then import it from another local project:
 
 ```
 // ~/some-project/index.ts
-import CF from '../customer-fields-api-client-node';
+import CF from '../Customer-Fields-REST-API-Client-for-Node.js';
 
 const customer = new CF.Customer({
   first_name: 'John',
