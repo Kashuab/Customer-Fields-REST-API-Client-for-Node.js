@@ -43,14 +43,12 @@ export type DataColumnFromServerDict = {
 };
 
 export class DataColumn extends Model implements DataColumnDict {
-  static Errors = {};
-
   static find = findDataColumns;
 
   /**
    * **The CF REST API currently does not support this action. Calling this method will do nothing.**
    */
-  static async findById(id: string): Promise<null> {
+  static async findById(): Promise<null> {
     return await null;
   }
 

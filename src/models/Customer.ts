@@ -248,6 +248,7 @@ export type GetCustomersOpts = {
 
 async function findCustomerById(id: string): Promise<Customer | null> {
   const response = await dispatchRequest(`/customers/${id}.json`);
+
   if (!response.ok) {
     throw new Error(`Failed to find customer by ID, receieved error code ${response.status}: ${response.statusText}`);
   }
@@ -277,10 +278,6 @@ async function findCustomers(
   });
 
   const response = await dispatchRequest(path);
-
-  if (!response.ok) {
-    throw new Error(`Failed to find customers, receieved error code ${response.status}: ${response.statusText}`);
-  }
 
   const customers: BasicCustomerDataDict[] = (await response.json()).customers || [];
 

@@ -41,9 +41,11 @@ describe('Customer', (): void => {
   });
 
   test('can get data', (): void => {
-    const customer = new Customer({ first_name: 'customer' });
+    const firstName = faker.name.firstName();
 
-    expect(customer.get('first_name')).toBe('customer');
+    const customer = new Customer({ first_name: firstName });
+
+    expect(customer.get('first_name')).toBe(firstName);
   });
 
   test('can determine if the customer is pending', (): void => {
@@ -70,9 +72,9 @@ describe('Customer', (): void => {
 
   test('can save a customer', async (): Promise<void> => {
     const customer = new Customer({
-      first_name: 'Joe',
-      last_name: 'Mama',
-      email: 'hahagoteem@website.com',
+      first_name: faker.name.firstName(),
+      last_name: faker.name.lastName(),
+      email: faker.internet.email(),
     });
 
     expect(customer.id).toBeUndefined();
@@ -125,6 +127,7 @@ describe('Customer', (): void => {
   test('can send a customer invite', async () => {
     const customer = new Customer({ email: faker.internet.email() });
 
+    // Assert that the customer needs to have been saved before sending an invite
     try {
       await customer.sendInvite();
     } catch (err) {
@@ -132,11 +135,9 @@ describe('Customer', (): void => {
     }
 
     await customer.save();
-
     expect(customer.get('state')).not.toBe('invited');
 
     await customer.sendInvite();
-
     expect(customer.get('state')).toBe('invited');
   });
 });

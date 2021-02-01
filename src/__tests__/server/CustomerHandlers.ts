@@ -1,6 +1,6 @@
 import { rest } from 'msw';
 import { BasicCustomerDataDict, CustomerSaveRequestPayload } from '../../models/Customer';
-import { generateCustomer } from './data/generateCustomer';
+import { generateCustomer, generateRandomString, generateShopifyCustomerId } from './data/generateCustomer';
 import { sortBy } from 'lodash';
 import { APIErrors } from '../../errors/Errors';
 import { getMockErrorResponse } from './Server';
@@ -16,6 +16,7 @@ export const emailInUse = 'already_in_use@website.com';
 
 export default [
   rest.get('http://localhost/api/v2/customers/search.json', (req, res, ctx) => {
+    // TODO: Figure out the best way to get rid of having to do this in every mock handler
     const err = getMockErrorResponse(res, ctx);
     if (err) return err;
 
@@ -48,7 +49,7 @@ export default [
     const updatedCustomer: BasicCustomerDataDict = {
       ...customer,
       id: generateRandomString(),
-      shopify_id: generateRandomNumber(),
+      shopify_id: generateShopifyCustomerId(),
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       state: 'disabled',
@@ -88,7 +89,3 @@ export default [
     );
   }),
 ];
-
-export const generateRandomString = (): string => Math.random().toString(36).substring(2);
-export const generateRandomNumber = (length = 12): number =>
-  parseInt(Math.random().toFixed(length).toString().substring(2));

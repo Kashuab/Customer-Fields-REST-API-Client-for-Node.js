@@ -9,7 +9,7 @@ export const generateCustomer = (): BasicCustomerDataDict => {
 
   return {
     accepts_marketing: faker.random.boolean(),
-    accepts_marketing_updated_at: new Date().toISOString(),
+    accepts_marketing_updated_at: faker.date.past().toISOString(),
     addresses,
     default_address: defaultAddress,
     email: faker.internet.email(),
@@ -25,7 +25,7 @@ export const generateCustomer = (): BasicCustomerDataDict => {
     created_at: faker.date.past().toISOString(),
     updated_at: faker.date.recent().toISOString(),
     orders_count: faker.random.number(),
-    shopify_id: 234567890,
+    shopify_id: generateShopifyCustomerId(),
     state: generateState(),
     verified_email: faker.random.boolean(),
     total_spent: faker.random.number(),
@@ -38,7 +38,7 @@ export const generateAddress = (overrides?: Partial<CustomerAddressDict>): Custo
     name = `${firstName} ${lastName}`;
 
   return {
-    id: `${faker.random.number()}`,
+    id: `${generateShopifyCustomerId()}`,
     first_name: firstName,
     last_name: lastName,
     name,
@@ -63,3 +63,9 @@ export const generateState = (): CustomerState =>
   ['enabled', 'invited', 'declined', 'disabled', 'cf:pending', 'cf:denied'][
     Math.floor(Math.random() * 6)
   ] as CustomerState;
+
+export const generateRandomString = (): string => Math.random().toString(36).substring(2);
+export const generateRandomNumber = (length: number): number =>
+  parseInt(Math.random().toFixed(length).toString().substring(2));
+
+export const generateShopifyCustomerId = (): number => generateRandomNumber(13);
