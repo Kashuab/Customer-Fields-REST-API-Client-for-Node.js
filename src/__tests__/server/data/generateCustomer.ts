@@ -1,5 +1,6 @@
 import { BasicCustomerDataDict, CustomerAddressDict, CustomerState } from '../../../models/Customer';
 import faker from 'faker';
+import { randomFromArray } from '../../../models/__tests__/utils';
 
 const flipCoin = () => Math.round(Math.random()) == 0;
 
@@ -58,11 +59,9 @@ export const generateAddress = (overrides?: Partial<CustomerAddressDict>): Custo
 };
 
 export const generatePhone = (): string => `+1${faker.phone.phoneNumberFormat().replace(/-/g, '')}`;
-export const generateCurrency = (): string => ['USD', 'EUR', 'GBP', 'JPY'][Math.floor(Math.random() * 4)];
+export const generateCurrency = (): string => randomFromArray(['USD', 'EUR', 'GBP', 'JPY']);
 export const generateState = (): CustomerState =>
-  ['enabled', 'invited', 'declined', 'disabled', 'cf:pending', 'cf:denied'][
-    Math.floor(Math.random() * 6)
-  ] as CustomerState;
+  randomFromArray(['enabled', 'invited', 'declined', 'disabled', 'cf:pending', 'cf:denied']);
 
 export const generateRandomString = (): string => Math.random().toString(36).substring(2);
 export const generateRandomNumber = (length: number): number =>

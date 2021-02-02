@@ -38,6 +38,7 @@ export type DataColumnFromServerDict = {
   data_type: ColumnDataType;
   dedicated: boolean;
   read_only: boolean;
+  _$form_ids?: string[];
   readonly created_at: string | null;
   readonly updated_at: string | null;
 };
